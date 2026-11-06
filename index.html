@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th"><head><base target="_top"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>กองทุนหมู่บ้านหนองคล้า</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500&family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--red:#b0123f;--green:#0b5d2e;--purple:#4b1a7a;--navy:#2b2f86;--gold:#c9a227;--bg:#f6f3ec;--ink:#222}
+*{box-sizing:border-box}
+body{margin:0;font-family:Sarabun,Tahoma,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+h1,h2,h3{font-family:Mitr,Sarabun,sans-serif;font-weight:500;margin:0}
+.hero{min-height:230px;display:flex;align-items:center;gap:22px;padding:20px 5vw;color:#fff;
+ background:linear-gradient(90deg,rgba(20,20,70,.78),rgba(20,20,70,.25)),#2b2f86 var(--hero,none) center/cover}
+.hero img{width:170px;height:170px;border-radius:50%;background:#fff;object-fit:contain;border:4px solid var(--gold);flex:none}
+.hero h1{font-size:clamp(1.6rem,4vw,2.6rem);text-shadow:0 2px 6px #0008}
+.hero p{margin:.3rem 0 0;font-size:1.1rem;text-shadow:0 1px 4px #0008}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px}
+.center{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0}
+.btn{height:1.5cm;min-width:6cm;padding:0 28px;border:0;border-radius:10px;color:#fff;font:500 1.1rem Mitr,Sarabun,sans-serif;cursor:pointer;box-shadow:0 3px 8px #0003}
+.btn:hover{filter:brightness(1.1)}.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.b-red{background:var(--red)}.b-green{background:var(--green)}.b-purple{background:var(--purple)}
+.small{height:auto;min-width:0;padding:7px 16px;font-size:.95rem;border-radius:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}
+.card{background:#fff;border-radius:12px;padding:16px;border-top:5px solid var(--navy);box-shadow:0 2px 8px #0001}
+.card b{display:block;font:500 1.6rem Mitr,sans-serif}.card:nth-child(2){border-color:var(--green)}.card:nth-child(3){border-color:var(--red)}.card:nth-child(4){border-color:var(--gold)}
+.panel{background:#fff;border-radius:14px;padding:18px;margin:16px 0;box-shadow:0 2px 8px #0001}
+.panel h2{color:var(--navy);margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.cv{position:relative;height:300px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th{background:var(--navy);color:#fff;padding:8px;text-align:left;white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid #e6e2d8}tr.m:hover{background:#f3efe2;cursor:pointer}
+td small{display:block;color:#7a5a00}
+.scroll{overflow-x:auto}
+input,select,textarea{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit}
+label{font-size:.9rem;font-weight:600;display:block;margin-bottom:3px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.f h3{grid-column:1/-1;color:var(--purple);border-bottom:2px solid var(--gold);padding-bottom:3px;margin-top:8px}
+.full{grid-column:1/-1}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:20px;z-index:9}
+#modal .box{background:#fff;border-radius:14px;padding:22px;width:min(920px,100%);margin:auto}
+.err{color:var(--red);font-weight:600;min-height:1.4em}
+footer{background:var(--purple);color:#fff;text-align:center;padding:26px 10px;margin-top:30px}
+footer h2{font-size:2rem;color:#e9d7ff}
+.note{font-size:.85rem;color:#666}
+@media(max-width:600px){.hero{flex-direction:column;text-align:center}.hero img{width:120px;height:120px}}
+</style></head>
+<body>
+<header class="hero" id="hero">
+  <img id="logo" alt="โลโก้กองทุนหมู่บ้าน">
+  <div><h1>กองทุนหมู่บ้านหนองคล้า</h1><p>หมู่ที่ 1 ต.แสลง อ.เมือง จ.จันทบุรี</p></div>
+</header>
+
+<main class="wrap">
+  <div class="center"><button class="btn b-red" onclick="openForm()">บันทึกรายการข้อมูล</button></div>
+  <div class="center"><button class="btn b-purple" onclick="askPin(openEntry)">สรุปรายรับรายจ่ายประจำเดือน</button></div>
+
+  <div class="cards" id="cards"></div>
+  <section class="panel"><h2>รายรับ–รายจ่ายเดือน<span id="curM"></span></h2>
+    <div class="grid2"><div class="cv"><canvas id="pieI"></canvas></div><div class="cv"><canvas id="pieE"></canvas></div></div></section>
+  <section class="panel"><h2>สถานะการเงินรวมทุกเดือน</h2><div class="cv"><canvas id="bar"></canvas></div></section>
+
+  <section class="panel"><h2>รายรับรายจ่ายประจำเดือน (เปิดดูได้ทุกเดือน)</h2>
+    <select id="msel" onchange="loadMonth()" style="max-width:260px"></select>
+    <div class="scroll" style="margin-top:10px"><table id="mtab"></table></div></section>
+
+  <section class="panel"><h2>รายชื่อสมาชิก</h2>
+    <input id="q" placeholder="ค้นหาชื่อ หรือ เลขที่สมาชิก" oninput="renderMembers()" style="max-width:340px">
+    <p class="note">กดที่แถวเพื่อดูรายการและการทำธุรกรรมของสมาชิก (ข้อมูลส่วนบุคคลแสดงเมื่อใส่รหัสเข้า)</p>
+    <div class="scroll"><table id="mtb"></table></div></section>
+
+  <div class="center"><button class="btn b-green" onclick="askPin(function(r){window.open(r.main,'_blank')})">จัดการข้อมูล</button></div>
+</main>
+<footer><h2>สามัคคี มีสัจจะ</h2></footer>
+<div id="modal"><div class="box" id="box"></div></div>
+
+<script>
+// ★ ใส่ลิงก์รูป (อัปโหลดขึ้น Google Drive → แชร์ "ทุกคนที่มีลิงก์" → https://lh3.googleusercontent.com/d/FILE_ID)
+const HERO_IMG='', LOGO_IMG='';
+if(HERO_IMG)document.getElementById('hero').style.setProperty('--hero','url('+HERO_IMG+')');
+if(LOGO_IMG)document.getElementById('logo').src=LOGO_IMG;else document.getElementById('logo').style.display='none';
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>{const m=String(v||'').replace(/,/g,'').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0};
+const fmt=n=>num(n).toLocaleString('th-TH');
+const run=(fn,...a)=>new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>no(e))[fn](...a));
+const today=()=>new Date().toISOString().slice(0,10);
+let PIN='',MEM=[],charts={};
+
+function show(h){$('box').innerHTML=h;$('modal').style.display='flex'}
+function hide(){$('modal').style.display='none'}
+$('modal').addEventListener('mousedown',e=>{if(e.target.id==='modal')hide()});
+
+// ---------- รหัสเข้า ----------
+function askPin(cb){
+  show('<h2>ใส่รหัสเข้า</h2><p><input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="รหัส 6 หลัก"></p><div class="err" id="perr"></div><div class="center"><button class="btn small b-green" id="pok">ยืนยัน</button> <button class="btn small b-red" onclick="hide()">ยกเลิก</button></div>');
+  $('pin').focus();
+  const go=async()=>{try{const p=$('pin').value.trim(),r=await run('checkPin',p);
+    if(!r.ok){$('perr').textContent='รหัสไม่ถูกต้อง';return}
+    PIN=p;hide();cb(r);loadMembers()}catch(e){$('perr').textContent=e.message}};
+  $('pok').onclick=go;$('pin').onkeydown=e=>{if(e.key==='Enter')go()};
+}
+
+// ---------- ฟอร์มสมาชิก (บันทึกลงชีต noi) ----------
+const F=(k,l,t,x)=>({k,l,t:t||'text',x:x||''});
+const FORM=[
+ ['ข้อมูลสมาชิก',[F('date','วันที่สมัคร','date'),F('no','เลขที่สมาชิก (3 หลัก)','text','maxlength=3 pattern=\\d{3}'),
+  ['prefix','คำนำหน้าชื่อ',['นาย','นาง','นางสาว']],F('fn','ชื่อ'),F('ln','นามสกุล'),
+  F('photo','รูปถ่ายหน้าตรง (ไม่เกิน 3 MB)','file','accept=image/*'),F('idcard','สำเนาบัตร (ภาพ ไม่เกิน 3 MB)','file','accept=image/*'),F('dob','วันเดือนปีเกิด','date'),F('tel','เบอร์โทร','tel')]],
+ ['ที่อยู่',[F('house','บ้านเลขที่'),F('moo','หมู่ที่'),F('sub','ตำบล')]],
+ ['เงินฝาก/ออม',[F('dep','เงินฝากครั้งแรก (บาท)','number','min=0 step=any'),F('sav_a','เงินออมรายเดือน (บาท)','number','min=0 step=any'),F('sav_d','วันที่ออม','date'),
+  F('tot','รวมเงิน (ฝากครั้งแรก + ออมรายเดือน)','number','readonly')]],
+ ['การกู้',[F('loan_a','การกู้ทั่วไป (บาท)','number','min=0 step=any'),F('loan_d','วันที่กู้ทั่วไป','date'),F('emg_a','การกู้ฉุกเฉิน (บาท)','number','min=0 step=any'),F('emg_d','วันที่กู้ฉุกเฉิน','date')]],
+ ['ผู้ค้ำประกัน',[F('g1f','ผู้ค้ำที่ 1 ชื่อ'),F('g1l','นามสกุล'),F('g1n','เลขที่สมาชิก'),F('g2f','ผู้ค้ำที่ 2 ชื่อ'),F('g2l','นามสกุล'),F('g2n','เลขที่สมาชิก')]],
+ ['อื่นๆ',[F('note','หมายเหตุ','textarea')]]];
+function field(f){
+  if(Array.isArray(f))return `<div><label>${f[1]}</label><select name="${f[0]}" required>${f[2].map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+  const inp=f.t==='textarea'?`<textarea name="${f.k}" rows=3></textarea>`:`<input name="${f.k}" type="${f.t}" ${f.x}>`;
+  return `<div class="${f.t==='textarea'?'full':''}"><label>${f.l}</label>${inp}</div>`;
+}
+// รูปแบบข้อความที่เก็บในชีต (อ่านง่าย และแยกกลับมาแก้ไขได้)
+const packAmt=(a,d)=>a===''?'':a+' บาท (วันที่ '+d+')';
+const packG=(f,l,n)=>(f||l||n)?(f+' '+l+' (เลขที่ '+n+')').trim():'';
+const packAddr=(h,m,s)=>(h||m||s)?'บ้านเลขที่ '+h+' หมู่ที่ '+m+' ต.'+s:'';
+function unpack(m){
+  const o={},A=s=>{const r=/^([\d.,]+)\s*บาท\s*\(วันที่\s*(.*)\)/.exec(s||'');return r?[r[1].replace(/,/g,''),r[2]]:[num(s)||'','']};
+  Object.assign(o,m);
+  [['sav','sav'],['loan','loan'],['emg','emg']].forEach(([k,p])=>{const r=A(m[k]);o[p+'_a']=r[0];o[p+'_d']=r[1]});
+  let r=/บ้านเลขที่\s*(.*?)\s*หมู่ที่\s*(.*?)\s*ต\.(.*)/.exec(m.addr||'');if(r){o.house=r[1];o.moo=r[2];o.sub=r[3]}
+  ['g1','g2'].forEach(g=>{const x=/^(\S*)\s+(.*?)\s*\(เลขที่\s*(.*)\)/.exec(m[g]||'');if(x){o[g+'f']=x[1];o[g+'l']=x[2];o[g+'n']=x[3]}});
+  return o;
+}
+async function openForm(row){
+  const m=row?MEM.find(x=>x.row===row):null;
+  show('<p>กำลังโหลด...</p>');
+  let no='';if(!m){try{no=await run('nextNo')}catch(e){}}
+  show(`<h2>${m?'แก้ไขข้อมูลสมาชิก '+esc(m.no):'บันทึกรายการข้อมูลสมาชิก'}</h2><form id="mf" onsubmit="return false">
+   <div class="f">${FORM.map(s=>`<h3>${s[0]}</h3>`+s[1].map(field).join('')).join('')}</div>
+   <div class="err" id="ferr"></div><div class="center"><button class="btn small b-red" id="fsave">บันทึก</button><button class="btn small b-purple" type="button" onclick="hide()">ปิด</button></div></form>`);
+  const f=$('mf');f.date.value=today();if(!m)f.no.placeholder='อัตโนมัติ '+no;
+  if(m){const u=unpack(m);[...f.elements].forEach(e=>{if(e.name&&e.type!=='file'&&u[e.name]!==undefined)e.value=u[e.name]});f.no.readOnly=true}
+  const calc=()=>f.tot.value=(Number(f.dep.value)||0)+(Number(f.sav_a.value)||0);
+  f.dep.oninput=f.sav_a.oninput=calc;calc();
+  $('fsave').onclick=()=>saveForm(row);
+}
+const b64=f=>new Promise((ok,no)=>{if(!f)return ok(null);if(f.size>3*1024*1024)return no(new Error('ไฟล์ "'+f.name+'" ใหญ่เกิน 3 MB'));
+  const r=new FileReader();r.onload=()=>ok({name:f.name,type:f.type,data:r.result.split(',')[1]});r.onerror=()=>no(new Error('อ่านไฟล์ไม่ได้'));r.readAsDataURL(f)});
+async function saveForm(row){
+  const f=$('mf'),er=$('ferr');er.textContent='';
+  if(!f.reportValidity())return;
+  try{
+    const v={};[...f.elements].forEach(e=>{if(e.name&&e.type!=='file')v[e.name]=e.value.trim()});
+    const d={date:v.date,no:v.no,prefix:v.prefix,fn:v.fn,ln:v.ln,dob:v.dob,tel:v.tel,addr:packAddr(v.house,v.moo,v.sub),dep:v.dep,
+      sav:packAmt(v.sav_a,v.sav_d),loan:packAmt(v.loan_a,v.loan_d),emg:packAmt(v.emg_a,v.emg_d),
+      g1:packG(v.g1f,v.g1l,v.g1n),g2:packG(v.g2f,v.g2l,v.g2n),note:v.note};
+    const files={photo:await b64(f.photo.files[0]),idcard:await b64(f.idcard.files[0])};
+    $('fsave').disabled=true;er.style.color='#222';er.textContent='กำลังบันทึก...';
+    const r=await run('saveMember',d,files,PIN,row||0);
+    show(`<h2>บันทึกสำเร็จ</h2><p>เลขที่สมาชิก <b>${esc(r.no)}</b></p><div class="center"><button class="btn small b-green" onclick="hide()">ตกลง</button></div>`);
+    loadMembers();loadDash();
+  }catch(e){er.style.color='';er.textContent=e.message;$('fsave').disabled=false}
+}
+
+// ---------- รายรับรายจ่ายประจำเดือน (บันทึกลงชีตของเดือนปัจจุบัน) ----------
+function who(p,l){return `<h3>${l}</h3><div><label>ชื่อ</label><input name="${p}f"></div><div><label>นามสกุล</label><input name="${p}l"></div><div><label>เลขที่สมาชิก</label><input name="${p}n"></div><div><label>ตำแหน่ง</label><input name="${p}p"></div><div><label>วันเดือนปี</label><input type="date" name="${p}d" value="${today()}"></div>`}
+const packW=(f,p)=>{const g=n=>($('ef').elements[p+n].value||'').trim();return g('f')||g('l')?`${g('f')} ${g('l')} | เลขที่ ${g('n')} | ${g('p')} | ${g('d')}`:''};
+let nEx=0;
+function addEx(){if(nEx>=8)return;nEx++;const d=document.createElement('div');d.className='full';d.style.cssText='display:grid;grid-template-columns:2fr 1fr;gap:10px';
+  d.innerHTML=`<input class="exd" placeholder="รายจ่ายที่ ${nEx} (ระบุรายการ)"><input class="exa" type="number" min="0" step="any" placeholder="จำนวนเงิน">`;$('exl').appendChild(d);if(nEx>=8)$('exb').style.display='none'}
+function openEntry(r){
+  nEx=0;
+  show(`<h2>สรุปรายรับรายจ่ายประจำเดือน (${esc(r.monthName)})</h2>
+   <div class="center"><button class="btn small b-green" onclick="window.open('${esc(r.month)}','_blank')">เปิด Google Sheets เดือน${esc(r.monthName)}</button></div>
+   <form id="ef" onsubmit="return false"><div class="f">
+   <div><label>วันเดือนปีที่บันทึก</label><input type="date" name="date" value="${today()}" required></div>
+   <h3>รายรับ</h3>
+   <div><label>เงินออม (บาท)</label><input name="sav" type="number" min="0" step="any"></div>
+   <div><label>ชำระเงินต้น (บาท)</label><input name="prin" type="number" min="0" step="any"></div>
+   <div><label>ชำระดอกเบี้ย (บาท)</label><input name="int" type="number" min="0" step="any"></div>
+   <div><label>รายรับอื่นๆ (บาท)</label><input name="oth" type="number" min="0" step="any"></div>
+   <div><label>แหล่งที่มารายรับอื่นๆ</label><select id="ocat" onchange="$('otx').style.display=this.value==='อื่นๆ'?'block':'none'"><option>เงินสนับสนุนจากรัฐ</option><option>เงินจากโครงการภาครัฐ</option><option>เงินบริจาค</option><option>อื่นๆ</option></select><input id="otx" placeholder="ระบุ" style="display:none;margin-top:6px"></div>
+   <h3>รายจ่าย (สูงสุด 8 รายการ)</h3><div class="full" id="exl" style="display:grid;gap:8px"></div>
+   <div class="full"><button type="button" class="btn small b-purple" id="exb" onclick="addEx()">+ เพิ่มรายการจ่าย</button></div>
+   ${who('s','ผู้ส่งเงิน')}${who('r','ผู้รับเงิน')}
+   <div class="full"><label>หมายเหตุ</label><input name="note"></div></div>
+   <div class="err" id="eerr"></div><div class="center"><button class="btn small b-purple" id="esave">บันทึกลงชีต</button><button class="btn small b-red" type="button" onclick="hide()">ปิด</button></div></form>`);
+  addEx();addEx();addEx();
+  $('esave').onclick=async()=>{const f=$('ef'),g=n=>f.elements[n].value.trim();
+    const exp=[...document.querySelectorAll('#exl>div')].map(d=>({d:d.querySelector('.exd').value.trim(),a:d.querySelector('.exa').value})).filter(x=>x.a!==''||x.d);
+    const e={date:g('date'),sav:g('sav'),prin:g('prin'),int:g('int'),oth:g('oth'),othDesc:g('oth')?($('ocat').value==='อื่นๆ'?$('otx').value.trim():$('ocat').value):'',
+      exp,note:g('note'),sender:packW(0,'s'),receiver:packW(0,'r')};
+    try{$('esave').disabled=true;await run('addEntry',e,PIN);hide();loadDash();loadMonth()}catch(x){$('eerr').textContent=x.message;$('esave').disabled=false}};
+}
+
+// ---------- แสดงผลหน้าเว็บ ----------
+const COL=['#2b2f86','#b0123f','#0b5d2e','#c9a227','#4b1a7a','#e07a1f','#1a8fa8','#7a7a7a'];
+function chart(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart($(id),cfg)}
+async function loadDash(){
+  try{const d=await run('getDash');
+   $('cards').innerHTML=[['สมาชิกทั้งหมด',d.members+' คน'],['เงินออมรวม',fmt(d.saving)+' บาท'],['เงินกู้ทั่วไป',fmt(d.loan)+' บาท'],['เงินกู้ฉุกเฉิน',fmt(d.emg)+' บาท']].map(c=>`<div class="card">${c[0]}<b>${c[1]}</b></div>`).join('');
+   $('curM').textContent=' '+d.cur;
+   const pie=(id,o,t)=>{const k=Object.keys(o);chart(id,{type:'doughnut',data:{labels:k.length?k:['ยังไม่มีข้อมูล'],datasets:[{data:k.length?k.map(x=>o[x]):[1],backgroundColor:k.length?COL:['#ddd']}]},
+     options:{maintainAspectRatio:false,plugins:{title:{display:true,text:t+' รวม '+fmt(k.reduce((s,x)=>s+o[x],0))+' บาท',font:{size:15}},legend:{position:'bottom'}}}})};
+   pie('pieI',d.inc,'รายรับ');pie('pieE',d.exp,'รายจ่าย');
+   chart('bar',{type:'bar',data:{labels:d.months.map(m=>m.m),datasets:[{label:'รายรับ',data:d.months.map(m=>m.i),backgroundColor:'#0b5d2e'},{label:'รายจ่าย',data:d.months.map(m=>m.e),backgroundColor:'#b0123f'},
+     {label:'คงเหลือ',data:d.months.map(m=>m.i-m.e),backgroundColor:'#2b2f86'}]},options:{maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}});
+  }catch(e){$('cards').innerHTML='<p class="err">โหลดข้อมูลไม่สำเร็จ: '+esc(e.message)+'</p>'}
+}
+async function loadMonthsList(){const m=await run('getMonths');
+  $('msel').innerHTML=m.list.map(x=>`<option>${esc(x)}</option>`).join('');$('msel').value=m.current;loadMonth()}
+async function loadMonth(){const d=await run('getMonth',$('msel').value);
+  $('mtab').innerHTML='<tr>'+d.head.map(h=>`<th>${esc(h)}</th>`).join('')+'</tr>'+(d.rows.length?d.rows.map((r,i)=>'<tr>'+r.map((c,j)=>{const n=d.notes[i][j];return `<td>${esc(c)}${n?`<small>${esc(n)}</small>`:''}</td>`}).join('')+'</tr>').join(''):`<tr><td colspan=19>ยังไม่มีรายการ</td></tr>`)}
+async function loadMembers(){MEM=await run('getMembers',PIN);renderMembers()}
+function renderMembers(){const q=$('q').value.trim();const l=MEM.filter(m=>!q||(m.no+m.prefix+m.fn+m.ln).includes(q));
+  $('mtb').innerHTML='<tr><th>เลขที่</th><th>ชื่อ-นามสกุล</th><th>รวมเงิน</th><th>กู้ทั่วไป</th><th>กู้ฉุกเฉิน</th></tr>'+
+   (l.map(m=>`<tr class="m" onclick="detail(${m.row})"><td>${esc(m.no)}</td><td>${esc(m.prefix+m.fn+' '+m.ln)}</td><td>${fmt(m.tot)}</td><td>${esc(m.loan||'-')}</td><td>${esc(m.emg||'-')}</td></tr>`).join('')||'<tr><td colspan=5>ไม่พบข้อมูล</td></tr>')}
+async function detail(row){const m=MEM.find(x=>x.row===row);const full=!!PIN;
+  const L=(a,b)=>`<tr><th>${a}</th><td>${b||'-'}</td></tr>`;const link=u=>u?`<a href="${esc(u)}" target="_blank">เปิดดู</a>`:'';
+  show(`<h2>${esc(m.prefix+m.fn+' '+m.ln)} (เลขที่ ${esc(m.no)})</h2><table>${L('วันที่สมัคร',esc(m.date))}
+   ${full?L('วันเกิด',esc(m.dob))+L('ที่อยู่',esc(m.addr))+L('เบอร์โทร',esc(m.tel))+L('รูปถ่าย',link(m.photo))+L('สำเนาบัตร',link(m.idcard)):''}
+   ${L('เงินฝากครั้งแรก',fmt(m.dep)+' บาท')}${L('เงินออมรายเดือน',esc(m.sav))}${L('รวมเงิน',fmt(m.tot)+' บาท')}
+   ${L('กู้ทั่วไป',esc(m.loan))}${L('กู้ฉุกเฉิน',esc(m.emg))}${L('ผู้ค้ำที่ 1',esc(m.g1))}${L('ผู้ค้ำที่ 2',esc(m.g2))}${L('หมายเหตุ',esc(m.note))}</table>
+   <h3 style="margin-top:14px;color:var(--purple)">การทำธุรกรรม</h3><div id="tx" class="scroll">กำลังโหลด...</div>
+   <div class="center"><button class="btn small b-red" onclick="PIN?openForm(${row}):askPin(function(){openForm(${row})})">แก้ไขข้อมูลสมาชิก</button><button class="btn small b-purple" onclick="hide()">ปิด</button></div>`);
+  try{const t=await run('getMemberTx',m.no);$('tx').innerHTML=t.length?'<table><tr><th>เดือน</th><th>วันที่</th><th>บทบาท</th><th>รายรับรวม</th><th>รายจ่ายรวม</th><th>หมายเหตุ</th></tr>'+t.map(x=>`<tr><td>${esc(x.m)}</td><td>${esc(x.date)}</td><td>${x.role}</td><td>${fmt(x.inc)}</td><td>${fmt(x.exp)}</td><td>${esc(x.note)}</td></tr>`).join('')+'</table>':'ยังไม่มีรายการ'}catch(e){$('tx').textContent='โหลดไม่สำเร็จ'}}
+
+loadDash();loadMembers();loadMonthsList();
+</script></body></html>
