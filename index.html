@@ -69,6 +69,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 .pc .pos{font-size:.85rem;opacity:.95;font-weight:700;border-bottom:1px solid rgba(255,255,255,.5);padding-bottom:4px;margin-bottom:6px}
 .pc .nm{font-weight:700;font-size:1.05rem}.pc small{display:block;opacity:.9}
 .t0 .pc{background:#8b1a3f}.t1 .pc{background:#0d47a1}.t2 .pc{background:#00796b}.t3 .pc{background:#ef6c00}
+.pc .ph{position:relative;width:96px;height:120px;margin:0 auto 8px;border-radius:12px;background:rgba(255,255,255,.25);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:700;border:3px solid #fff}.pc .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .kv{display:grid;grid-template-columns:160px 1fr;gap:4px 12px}.kv dt{font-weight:700;color:#455a64}.kv dd{margin:0}
 @media print{
  .bar,.modal,#toast,#busy,.noprint,.big,.row{display:none!important}
@@ -276,7 +277,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // ใส่ลิงก์เว็บแอป Apps Script (ลงท้าย /exec) ตรงนี้ เมื่อวางหน้านี้บน GitHub Pages
-const API_URL = 'https://script.google.com/macros/s/AKfycbyDcO4h7_8ffd82e3Dyq5fF7JK2JuzcVR-yWSnjkrkzVIdh5l7aWg08iuaKtpmVWlDZKw/exec';
+const API_URL = 'วางลิงก์ /exec ที่นี่';
 const run = (fn, ...a) => {
   if (window.google && google.script && google.script.run) return new Promise((ok, no) => { const r = google.script.run.withSuccessHandler(ok).withFailureHandler(no); r[fn](...a); });
   if (!/^https:\/\/script\.google\.com\//.test(API_URL)) return Promise.reject(new Error('ยังไม่ได้ใส่ลิงก์ API_URL ในไฟล์ index.html'));
@@ -304,7 +305,7 @@ $('gateForm').addEventListener('submit', async e => {
   try { const ok = await run('checkCode', v);
     if (!ok) { $('gateErr').textContent = 'รหัสไม่ถูกต้อง'; $('gateIn').select(); return; }
     CODE = v; $('gate').classList.remove('open'); const r = gateResolve; gateResolve = null; if (r) r();
-  } catch (x) { $('gateErr').textContent = 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง'; }
+  } catch (x) { $('gateErr').textContent = 'เชื่อมต่อไม่ได้: ' + (x && x.message ? x.message : x); }
 });
 async function showLink(fn, ...args) {
   await needCode(); busy(true);
@@ -442,13 +443,17 @@ $('memForm').addEventListener('submit', async e => {
 // ---------- คณะกรรมการ ----------
 async function loadCommittee() { try { if (!MEMBERS.length) { MEMBERS = await run('getMembers'); fillDatalist(); } COMMITTEE = await run('getCommittee'); renderOrg(); } catch (e) { fail(e); } }
 const TIERS = [['ประธาน'], ['รองประธาน'], ['เลขานุการ', 'เหรัญญิก'], ['ประชาสัมพันธ์', 'กรรมการ']];
+function cphoto(c) {
+  const m = MEMBERS.find(x => x.no === c.no), u = m ? thumb(m.photo, 400) : '';
+  return `<div class="ph"><span>${esc((c.first || '?').charAt(0))}</span>${u ? `<img src="${u}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}</div>`;
+}
 function renderOrg() {
   if (!COMMITTEE.length) { $('orgChart').innerHTML = '<p style="color:#78909c">ยังไม่มีข้อมูลคณะกรรมการ</p>'; return; }
   const tierOf = p => { const i = TIERS.findIndex(t => t.includes(p)); return i < 0 ? 3 : i; };
   let html = '';
   TIERS.forEach((t, i) => {
     const list = COMMITTEE.filter(c => tierOf(c.position) === i); if (!list.length) return;
-    html += `<div class="tier t${i}">` + list.map(c => `<div class="pc"><div class="pos">${esc(c.position)}</div><div class="nm">${esc(c.first + ' ' + c.last)}</div>
+    html += `<div class="tier t${i}">` + list.map(c => `<div class="pc">${cphoto(c)}<div class="pos">${esc(c.position)}</div><div class="nm">${esc(c.first + ' ' + c.last)}</div>
       <small>${c.no ? 'สมาชิกเลขที่ ' + esc(c.no) : ''}</small><small>${esc(c.phone)}</small><small>${esc(c.note)}</small>
       ${CODE ? `<div class="noprint" style="margin-top:6px"><button class="btn sm gray" onclick="editCom(${c._row})">แก้ไข</button> <button class="btn sm red" onclick="delCom(${c._row})">ลบ</button></div>` : ''}</div>`).join('') + '</div>';
   });
