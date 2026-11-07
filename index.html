@@ -85,7 +85,7 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const num=v=>{const m=String(v||'').replace(/,/g,'').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0};
 const fmt=n=>num(n).toLocaleString('th-TH');
 // ★ ถ้าฝากหน้านี้ไว้โฮสต์ภายนอก ให้ใส่ลิงก์เว็บแอป (ที่ลงท้าย /exec) ตรงนี้ ถ้าเปิดจากลิงก์ของ Apps Script โดยตรงไม่ต้องใส่
-const API_URL='';
+const API_URL='https://script.google.com/macros/s/AKfycbzf1n9g082QkztnmpXvmG6ixEV-ZWKwPWcfCLrQbBAH5mL3IYOeZnBM7yK-4fhMQOElJg/exec';
 const run=(fn,...a)=>{
   if(typeof google!=='undefined'&&google.script&&google.script.run)
     return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>no(e))[fn](...a));
