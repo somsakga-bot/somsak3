@@ -76,7 +76,7 @@ footer h2{font-size:2rem;color:#e9d7ff}
 
 <script>
 // ★ ใส่ลิงก์รูป (อัปโหลดขึ้น Google Drive → แชร์ "ทุกคนที่มีลิงก์" → https://lh3.googleusercontent.com/d/FILE_ID)
-const HERO_IMG='47392.jpg', LOGO_IMG='47393.jpg';
+const HERO_IMG='', LOGO_IMG='';
 if(HERO_IMG)document.getElementById('hero').style.setProperty('--hero','url('+HERO_IMG+')');
 if(LOGO_IMG)document.getElementById('logo').src=LOGO_IMG;else document.getElementById('logo').style.display='none';
 
@@ -84,7 +84,15 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=v=>{const m=String(v||'').replace(/,/g,'').match(/-?\d+(\.\d+)?/);return m?Number(m[0]):0};
 const fmt=n=>num(n).toLocaleString('th-TH');
-const run=(fn,...a)=>new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>no(e))[fn](...a));
+// ★ ถ้าฝากหน้านี้ไว้โฮสต์ภายนอก ให้ใส่ลิงก์เว็บแอป (ที่ลงท้าย /exec) ตรงนี้ ถ้าเปิดจากลิงก์ของ Apps Script โดยตรงไม่ต้องใส่
+const API_URL='';
+const run=(fn,...a)=>{
+  if(typeof google!=='undefined'&&google.script&&google.script.run)
+    return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>no(e))[fn](...a));
+  if(!API_URL)return Promise.reject(new Error('ยังไม่ได้ตั้งค่า API_URL (ใส่ลิงก์เว็บแอปที่ลงท้าย /exec) หรือให้เปิดหน้านี้จากลิงก์เว็บแอปโดยตรง'));
+  return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args:a})})
+    .then(r=>r.json()).then(j=>{if(!j.ok)throw new Error(j.error);return j.data});
+};
 const today=()=>new Date().toISOString().slice(0,10);
 let PIN='',MEM=[],charts={};
 
