@@ -277,7 +277,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // ใส่ลิงก์เว็บแอป Apps Script (ลงท้าย /exec) ตรงนี้ เมื่อวางหน้านี้บน GitHub Pages
-const API_URL = 'https://script.google.com/macros/s/AKfycbz2sF7fjQ6MGRDXEgdc5uAQnUXmHPykkWrG2wlAJ4ass7Xu9xp3QmcJG4RZx5zWf0cKaA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwIx0aKt_gouC6VjH1sBxW825gDW4QnitZL8OHazby_neZN-kqbJiD3bznjzEg7_tw/exec';
 const run = (fn, ...a) => {
   if (window.google && google.script && google.script.run) return new Promise((ok, no) => { const r = google.script.run.withSuccessHandler(ok).withFailureHandler(no); r[fn](...a); });
   if (!/^https:\/\/script\.google\.com\//.test(API_URL)) return Promise.reject(new Error('ยังไม่ได้ใส่ลิงก์ API_URL ในไฟล์ index.html'));
