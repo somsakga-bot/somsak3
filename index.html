@@ -57,6 +57,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 .prev{max-height:130px;margin-top:6px;border-radius:8px;display:none;border:1px solid #b0bec5}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}
 .modal.open{display:flex}
+#gate,#linkM{z-index:80}
 .box{background:#fff;border-radius:14px;padding:20px;width:min(440px,100%);max-height:92vh;overflow:auto}
 .box.wide{width:min(820px,100%)}
 .err{color:#c62828;font-weight:600;min-height:1.3em}
@@ -75,6 +76,13 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
  .bar,.modal,#toast,#busy,.noprint,.big,.row{display:none!important}
  body{background:#fff}.hero{min-height:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .card{break-inside:avoid;border:1px solid #999}.foot,.stat,th,.pc{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media print{
+ body.pm .bar,body.pm main,body.pm .foot{display:none!important}
+ body.pm #detM{display:block!important;position:static;background:#fff;padding:0}
+ body.pm #detM .box{width:100%;max-height:none;overflow:visible;padding:8px 0}
+ body.pm #detM .row{display:flex!important}
+ body.pm #detM .noprint{display:none!important}
 }
 </style>
 </head>
@@ -178,14 +186,14 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 <!-- ============ คณะกรรมการ ============ -->
 <section id="v-committee" class="view">
   <div class="card">
-    <h2 style="text-align: center;">คณะกรรมการบริหารกองทุนหมู่บ้านหนองคล้า</h2>
+    <h2>คณะกรรมการบริหารกองทุนหมู่บ้านหนองคล้า</h2>
     <div id="orgChart" class="org"></div>
     <div class="row noprint" style="justify-content:center"><button class="btn mar" onclick="openComForm()">เพิ่ม/แก้ไขข้อมูลคณะกรรมการ</button></div>
   </div>
   <form id="comForm" class="card noprint" style="display:none" autocomplete="off">
     <h2 id="comTitle">เพิ่มกรรมการ</h2>
     <div class="fg">
-      <div><label>ตำแหน่ง</label><select id="c_pos" required><option>ประธาน</option><option>รองประธาน1</option><option>รองประธาน2</option><option>เลขานุการ</option><option>ผู้ช่วยเลขานุการ</option><option>เหรัญญิก</option><option>ผู้ช่วยเหรัญญิก</option><option>ประชาสัมพันธ์</option><option>ปฏิคม</option><option>ผู้ตรวจสอบบัญชี</option><option>ผู้ตรวจสอบภายใน</option></select></div>
+      <div><label>ตำแหน่ง</label><select id="c_pos" required><option>ประธาน</option><option>รองประธาน</option><option>เลขานุการ</option><option>เหรัญญิก</option><option>ประชาสัมพันธ์</option><option>กรรมการ</option></select></div>
       <div><label>ชื่อ นามสกุล (พิมพ์เพื่อค้นหาจากสมาชิก)</label><input id="c_name" required></div>
       <div><label>เลขที่สมาชิก</label><input id="c_no" readonly></div>
       <div><label>เบอร์โทร</label><input id="c_phone" type="tel"></div>
@@ -218,7 +226,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
       <div><label>ประเภท</label><select id="e_type" onchange="fillCats()"><option>รายรับ</option><option>รายจ่าย</option></select></div>
       <div><label>หมวดรายการ</label><select id="e_cat" onchange="catChange()"></select></div>
       <div><label id="e_dl">รายละเอียด</label><input id="e_det" list="otherList" placeholder="ระบุ เช่น เงินสนับสนุนจากรัฐ"></div>
-      <div><label>จำนวนเงิน (บาท)</label><input type="number" id="e_amt" min="1" step="1" required></div>
+      <div><label>จำนวนเงิน (บาท)</label><input type="number" id="e_amt" min="0.01" step="0.01" required></div>
       <div><label>หมายเหตุ</label><input id="e_note"></div>
     </div>
     <datalist id="otherList"><option value="เงินสนับสนุนจากรัฐ"><option value="เงินจากโครงการภาครัฐ"><option value="เงินบริจาค"></datalist>
@@ -277,7 +285,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // ใส่ลิงก์เว็บแอป Apps Script (ลงท้าย /exec) ตรงนี้ เมื่อวางหน้านี้บน GitHub Pages
-const API_URL = 'https://script.google.com/macros/s/AKfycbyscRNxOEjLprLWdEVA_UwUmIhJkosWzZF78h0bUUENHDOPP5SgPGmW61nyRnyYYxRiww/exec';
+const API_URL = 'วางลิงก์ /exec ที่นี่';
 const run = (fn, ...a) => {
   if (window.google && google.script && google.script.run) return new Promise((ok, no) => { const r = google.script.run.withSuccessHandler(ok).withFailureHandler(no); r[fn](...a); });
   if (!/^https:\/\/script\.google\.com\//.test(API_URL)) return Promise.reject(new Error('ยังไม่ได้ใส่ลิงก์ API_URL ในไฟล์ index.html'));
@@ -287,7 +295,7 @@ const run = (fn, ...a) => {
 const fm = n => Number(n || 0).toLocaleString('th-TH', {maximumFractionDigits: 2});
 const fd = s => { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]}/${+m[2]}/${+m[1] + 543}` : (s || ''); };
 const today = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
-const POS = ['ประธาน','รองประธาน1','รองประธาน2','เหรัญญิก','ผู้ช่วยเหรัญญิก','เลขานุการ','ผู้ช่วยเลขานุการ','ประชาสัมพันธ์','ปฏิคม','ผู้ตรวจสอบบัญชี','ผู้ตรวจสอบภานใน','สมาชิก'];
+const POS = ['ประธาน','รองประธาน','เลขานุการ','เหรัญญิก','ประชาสัมพันธ์','กรรมการ','สมาชิก'];
 const INC = ['เงินออมสมาชิก','ดอกเบี้ยรับ','ชำระคืนเงินกู้','รายรับอื่นๆ'];
 const EXP = ['เงินกู้ให้สมาชิก','ถอนเงินออมคืนสมาชิก','ค่าใช้จ่ายดำเนินงาน','รายจ่ายอื่นๆ'];
 let MEMBERS = [], COMMITTEE = [], CODE = '', EDIT = null, MODE = 'new', MONEY_UNLOCKED = false, CUR = null, gateResolve = null, charts = {};
@@ -374,8 +382,9 @@ async function showMember(no) {
    <dt>หมายเหตุ</dt><dd>${esc(m.note)}</dd></dl>
   <div class="sec">ประวัติการทำธุรกรรม</div>
   <div class="tbl"><table><thead><tr><th>วันที่</th><th>ประเภท</th><th class="r">จำนวนเงิน</th><th>เวลาบันทึก</th></tr></thead><tbody>${log.length ? log.map(l => `<tr><td>${fd(l.date)}</td><td>${esc(l.type)}</td><td class="r">${fm(l.amount)}</td><td>${esc(l.ts)}</td></tr>`).join('') : '<tr><td colspan="4" style="color:#78909c">ยังไม่มีรายการ</td></tr>'}</tbody></table></div>
-  <div class="row"><button class="btn mar" onclick="editMember('${esc(m.no)}')">แก้ไขข้อมูล</button><button class="btn gray" onclick="$('detM').classList.remove('open')">ปิด</button></div>`;
+  <div class="row noprint"><button class="btn mar" onclick="editMember('${esc(m.no)}')">แก้ไขข้อมูล</button><button class="btn" style="background:#37474f" onclick="printMember()">พิมพ์เอกสาร</button><button class="btn gray" onclick="$('detM').classList.remove('open')">ปิด</button></div>`;
 }
+function printMember() { document.body.classList.add('pm'); const off = () => document.body.classList.remove('pm'); window.addEventListener('afterprint', off, { once: true }); setTimeout(() => window.print(), 100); setTimeout(off, 60000); }
 async function editMember(no) { await needCode(); $('detM').classList.remove('open'); openForm('edit', MEMBERS.find(x => x.no === no)); }
 
 // ---------- ฟอร์มสมาชิก ----------
@@ -442,7 +451,7 @@ $('memForm').addEventListener('submit', async e => {
 
 // ---------- คณะกรรมการ ----------
 async function loadCommittee() { try { if (!MEMBERS.length) { MEMBERS = await run('getMembers'); fillDatalist(); } COMMITTEE = await run('getCommittee'); renderOrg(); } catch (e) { fail(e); } }
-const TIERS = [['ประธาน'], ['รองประธาน1''รองประธาน1'], ['เลขานุการ','ประชาสัมพันธ์','เหรัญญิก','ปฏิคม',], ['ผู้ตรวจสอบบัญชี','ผู้ตรวจสอบภายใน','ผู้ช่วยเลขานุการ','ผู้ช่วยเหรัญญิก']];
+const TIERS = [['ประธาน'], ['รองประธาน'], ['เลขานุการ', 'เหรัญญิก'], ['ประชาสัมพันธ์', 'กรรมการ']];
 function cphoto(c) {
   const m = MEMBERS.find(x => x.no === c.no), u = m ? thumb(m.photo, 400) : '';
   return `<div class="ph"><span>${esc((c.first || '?').charAt(0))}</span>${u ? `<img src="${u}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}</div>`;
@@ -520,6 +529,9 @@ $('handForm').addEventListener('submit', async e => {
   } catch (x) { fail(x); }
 });
 
+window.addEventListener('unhandledrejection', e => fail(e.reason));
+window.addEventListener('error', e => toast('ข้อผิดพลาดในหน้าเว็บ: ' + e.message, true));
+$('busy').addEventListener('click', () => busy(false));
 loadDash(); run('getMembers').then(m => { MEMBERS = m; fillDatalist(); }).catch(() => { });
 </script>
 </body>
