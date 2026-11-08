@@ -451,7 +451,7 @@ $('memForm').addEventListener('submit', async e => {
 
 // ---------- คณะกรรมการ ----------
 async function loadCommittee() { try { if (!MEMBERS.length) { MEMBERS = await run('getMembers'); fillDatalist(); } COMMITTEE = await run('getCommittee'); renderOrg(); } catch (e) { fail(e); } }
-const TIERS = [['ประธาน'], ['รองประธาน'], ['เลขานุการ', 'เหรัญญิก'], ['ประชาสัมพันธ์', 'กรรมการ']];
+const TIERS = [['ประธาน'], ['รองประธาน1','รองประธาน2'], ['เหรัญญิก', 'เลขานุการ', 'ประชาสัมพันธ์', 'ปฏิคม'], ['ผู้ช่วยเหรัญญิก', 'ผู้ช่วยเลขานุการ'], ['ผู้ตรวจสอบบัญชี', 'ผู้ตรวจสอบภายใน']];
 function cphoto(c) {
   const m = MEMBERS.find(x => x.no === c.no), u = m ? thumb(m.photo, 400) : '';
   return `<div class="ph"><span>${esc((c.first || '?').charAt(0))}</span>${u ? `<img src="${u}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}</div>`;
