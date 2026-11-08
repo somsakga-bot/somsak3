@@ -285,7 +285,7 @@ tbody tr:nth-child(even){background:#f7fbf6}tr.click{cursor:pointer}tr.click:hov
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // ใส่ลิงก์เว็บแอป Apps Script (ลงท้าย /exec) ตรงนี้ เมื่อวางหน้านี้บน GitHub Pages
-const API_URL = 'https://script.google.com/macros/s/AKfycbz_hWF3PZQg_7-hmHxIANrSU3iyzsubr4QFam2kxZZsITF7gU4903b1uUcgdA_wVw5Ddw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwy1TIi4SNbijHCkY_eFzef28WRBjit4tDSjZoAjDy0Yz6FWXk2_zER64DfG-35-tgvbw/exec';
 const run = (fn, ...a) => {
   if (window.google && google.script && google.script.run) return new Promise((ok, no) => { const r = google.script.run.withSuccessHandler(ok).withFailureHandler(no); r[fn](...a); });
   if (!/^https:\/\/script\.google\.com\//.test(API_URL)) return Promise.reject(new Error('ยังไม่ได้ใส่ลิงก์ API_URL ในไฟล์ index.html'));
@@ -295,7 +295,7 @@ const run = (fn, ...a) => {
 const fm = n => Number(n || 0).toLocaleString('th-TH', {maximumFractionDigits: 2});
 const fd = s => { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]}/${+m[2]}/${+m[1] + 543}` : (s || ''); };
 const today = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
-const POS = ['ประธาน','รองประธาน1','รองประธาน2','เลขานุการ','เหรัญญิก','ประชาสัมพันธ์','ปฏิคม','ผู้ช่วยเหรัญญิก', 'ผู้ช่วยเลขานุการ', 'ผู้ตรวจสอบบัญชี', 'ผู้ตรวจสอบภายใน'];
+const POS = ['ประธาน','รองประธาน1','รองประธาน2','เลขานุการ','เหรัญญิก','ประชาสัมพันธ์','ปฏิคม','ผู้ช่วยเหรัญญิก','ผู้ช่วยเลขานุการ','ผู้ตรวจสอบบัญชี','ผู้ตรวจสอบภายใน'];
 const INC = ['เงินออมสมาชิก','ดอกเบี้ยรับ','ชำระคืนเงินกู้','รายรับอื่นๆ'];
 const EXP = ['เงินกู้ให้สมาชิก','ถอนเงินออมคืนสมาชิก','ค่าใช้จ่ายดำเนินงาน','รายจ่ายอื่นๆ'];
 let MEMBERS = [], COMMITTEE = [], CODE = '', EDIT = null, MODE = 'new', MONEY_UNLOCKED = false, CUR = null, gateResolve = null, charts = {};
@@ -451,7 +451,7 @@ $('memForm').addEventListener('submit', async e => {
 
 // ---------- คณะกรรมการ ----------
 async function loadCommittee() { try { if (!MEMBERS.length) { MEMBERS = await run('getMembers'); fillDatalist(); } COMMITTEE = await run('getCommittee'); renderOrg(); } catch (e) { fail(e); } }
-const TIERS = [['ประธาน'], ['รองประธาน1','รองประธาน2'], ['เหรัญญิก', 'เลขานุการ', 'ประชาสัมพันธ์', 'ปฏิคม'], ['ผู้ช่วยเหรัญญิก', 'ผู้ช่วยเลขานุการ'], 'ผู้ตรวจสอบบัญชี', 'ผู้ตรวจสอบภายใน']];
+const TIERS = [['ประธาน'], ['รองประธาน1','รองประธาน2'], ['เหรัญญิก','เลขานุการ','ประชาสัมพันธ์','ปฏิคม'], ['ผู้ช่วยเหรัญญิก','ผู้ช่วยเลขานุการ','ผู้ตรวจสอบบัญชี','ผู้ตรวจสอบภายใน']];
 function cphoto(c) {
   const m = MEMBERS.find(x => x.no === c.no), u = m ? thumb(m.photo, 400) : '';
   return `<div class="ph"><span>${esc((c.first || '?').charAt(0))}</span>${u ? `<img src="${u}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">` : ''}</div>`;
