@@ -295,7 +295,7 @@ const run = (fn, ...a) => {
 const fm = n => Number(n || 0).toLocaleString('th-TH', {maximumFractionDigits: 2});
 const fd = s => { const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${+m[3]}/${+m[2]}/${+m[1] + 543}` : (s || ''); };
 const today = () => { const d = new Date(), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
-const POS = ['ประธาน','รองประธาน','เลขานุการ','เหรัญญิก','ประชาสัมพันธ์','กรรมการ','สมาชิก'];
+const POS = ['ประธาน','รองประธาน1','รองประธาน2','เลขานุการ','เหรัญญิก','ประชาสัมพันธ์','ปฏิคม','ผู้ช่วยเหรัญญิก', 'ผู้ช่วยเลขานุการ', 'ผู้ตรวจสอบบัญชี', 'ผู้ตรวจสอบภายใน'];
 const INC = ['เงินออมสมาชิก','ดอกเบี้ยรับ','ชำระคืนเงินกู้','รายรับอื่นๆ'];
 const EXP = ['เงินกู้ให้สมาชิก','ถอนเงินออมคืนสมาชิก','ค่าใช้จ่ายดำเนินงาน','รายจ่ายอื่นๆ'];
 let MEMBERS = [], COMMITTEE = [], CODE = '', EDIT = null, MODE = 'new', MONEY_UNLOCKED = false, CUR = null, gateResolve = null, charts = {};
